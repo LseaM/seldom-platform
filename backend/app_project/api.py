@@ -8,20 +8,20 @@ import logging
 import os
 import subprocess
 
-import requests
 from django.shortcuts import get_object_or_404
 from ninja import File
 from ninja import Router
 from ninja.files import UploadedFile
 from seldom import SeldomTestLoader
 from seldom import TestMainExtend
+from seldom.logging import log
 from seldom.utils import file
 
 from app_case.models import TestCase, TestCaseTemp
 from app_project.models import Project, Env
 from app_project.schema import ProjectIn, EnvIn, MergeCase
 from app_task.models import TestTask
-from app_utils.git_utils import LocalGitResource
+from app_utils.git_utils import LocalGitResource, is_valid_git_repo_url
 from app_utils.module_utils import clear_test_modules
 from app_utils.permission import check_permissions, PROJECT_PERMISSIONS, ENV_PERMISSIONS
 from app_utils.project_utils import get_hash, copytree
@@ -56,16 +56,8 @@ def create_project(request, project: ProjectIn):
         project_case_dir = project.case_dir
 
     # 检查项目地址是否可用
-    # if project.address.startswith("http") is False:
-    #     return response(error=Error.PROJECT_ADDRESS_ERROR)
-    #
-    # try:
-    #     resp = requests.get(project.address)
-    #     if resp.status_code != 200:
-    #         return response(error=Error.PROJECT_ADDRESS_ERROR)
-    # except BaseException as msg:
-    #     logger.error(msg)
-    #     return response(error=Error.PROJECT_ADDRESS_ERROR)
+    if is_valid_git_repo_url(project.address) is False:
+        return response(error=Error.PROJECT_ADDRESS_ERROR)
 
     project_obj = Project.objects.create(
         name=project.name,
@@ -113,6 +105,9 @@ def update_project(request, project_id: int, project: ProjectIn):
     """
     通过项目ID更新项目
     """
+    if is_valid_git_repo_url(project.address) is False:
+        return response(error=Error.PROJECT_ADDRESS_ERROR)
+
     project_obj = get_object_or_404(Project, pk=project_id)
     project_obj.name = project.name
     project_obj.address = project.address
@@ -199,7 +194,7 @@ def sync_project_case(request, project_id: int):
     project = get_object_or_404(Project, pk=project_id)
 
     local = LocalGitResource(project.name, project.address)
-    project_root_dir = local.git_project_dir(suffix=project.run_version)
+    project_root_dir = local.git_project_dir()
 
     project_test_dir = file.join(project_root_dir, project.case_dir)
     if os.path.isdir(project_test_dir) is False:
@@ -224,6 +219,12 @@ def sync_project_case(request, project_id: int):
     for seldom in seldom_case:
         case_hash = get_hash(f"""{project_id}.{seldom["file"]}.{seldom["class"]["name"]}.{seldom["method"]["name"]}""")
         if case_hash not in case_hash_list:
+            try:
+                label = seldom["method"]["label"]
+            except KeyError as msg:
+                log.error(msg)
+                label = ""
+
             case_hash_list.append(case_hash)
             TestCaseTemp.objects.create(
                 project_id=project_id,
@@ -232,6 +233,7 @@ def sync_project_case(request, project_id: int):
                 class_doc=seldom["class"]["doc"],
                 case_name=seldom["method"]["name"],
                 case_doc=seldom["method"]["doc"],
+                label=label,
                 case_hash=case_hash
             )
 
@@ -262,7 +264,8 @@ def async_project_result(request, project_id: int):
                 "class_doc": temp.class_doc,
                 "case_name": temp.case_name,
                 "case_doc": temp.case_doc,
-                "case_hash": temp.case_hash
+                "case_hash": temp.case_hash,
+                "label": temp.label,
             })
 
     # 项目用例表找出已删除的用例
@@ -277,7 +280,8 @@ def async_project_result(request, project_id: int):
                 "class_doc": project.class_doc,
                 "case_name": project.case_name,
                 "case_doc": project.case_doc,
-                "case_hash": project.case_hash
+                "case_hash": project.case_hash,
+                "label": project.label,
             })
 
     return response(result={"project_id": project_id, "add_case": add_case, "del_case": del_case})
@@ -301,7 +305,8 @@ def async_project_merge(request, project_id: int, param: MergeCase):
             class_doc=case["class_doc"],
             case_name=case["case_name"],
             case_doc=case["case_doc"],
-            case_hash=case["case_hash"]
+            case_hash=case["case_hash"],
+            label=case["label"]
         )
 
     # 删除用例
@@ -416,23 +421,31 @@ def get_project_files(request, project_id: int):
 
 
 @router.get('/{project_id}/cases')
-def get_project_file_cases(request, project_id: int, file_name: str):
+def get_project_file_cases(request, project_id: int, file_name: str, label_name: str = None):
     """
     获取文件下面的测试用例
     """
     # 如果是文件，直接取文件的类、方法
-    if ".py" in file_name:
+    if ".py" not in file_name:
+        return response(error=Error.FILE_NAME_ERROR)
+
+    if label_name is not None:
+        file_cases = TestCase.objects.filter(
+            project_id=project_id,
+            file_name=file_name[0:-3],
+            label__contains=label_name
+        )
+    else:
         file_cases = TestCase.objects.filter(
             project_id=project_id,
             file_name=file_name[0:-3]
         )
-        case_list = []
-        for case in file_cases:
-            case_list.append(model_to_dict(case))
 
-        return response(result=case_list)
+    case_list = []
+    for case in file_cases:
+        case_list.append(model_to_dict(case))
 
-    return response()
+    return response(result=case_list)
 
 
 @router.get('/{project_id}/subdirectory')

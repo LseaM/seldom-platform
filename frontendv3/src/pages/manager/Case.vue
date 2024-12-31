@@ -8,6 +8,7 @@ import {
   TreeOption,
   NSpace,
   NButton,
+  NTag
 } from "naive-ui";
 import type { DataTableColumns } from "naive-ui";
 import { FolderOpenOutline, LogoPython, Refresh } from "@vicons/ionicons5";
@@ -37,6 +38,7 @@ interface RowData {
   class_doc: string;
   case_name: string;
   case_doc: string;
+  label: string;
   status: number;
 }
 
@@ -120,6 +122,18 @@ const createColumns = ({
     {
       title: "测试类描述",
       key: "class_doc",
+      render(row) {
+        const classDocText = row.class_doc || '无描述';
+        return h(
+          'span',
+          {
+            style: {
+              color: '#8B8BA8'
+            }
+          },
+          classDocText
+        );
+      }
     },
     {
       title: "测试方法",
@@ -128,20 +142,52 @@ const createColumns = ({
     {
       title: "测试方法描述",
       key: "case_doc",
+      render(row) {
+        const caseDocText = row.case_doc || '无描述';
+        return h(
+          'span',
+          {
+            style: {
+              color: '#8B8BA8'
+            }
+          },
+          caseDocText
+        );
+      }
+    },
+    {
+      title: "标签",
+      key: "label",
+      render(row) {
+        const labelText = row.label || '无标签';
+        return h(
+          NTag,
+          {
+            type: 'warning',
+            size: 'small',
+          },
+          { default: () => labelText }
+        );
+      }
     },
     {
       title: "状态",
       key: "status",
       render(row) {
-        if (row.status === 0) {
-          return "未执行";
-        } else if (row.status === 1) {
-          return "执行中";
-        } else if (row.status === 2) {
-          return "已执行";
-        } else {
-          return "未知";
-        }
+        const statusMap: Record<number, { type: 'default' | 'success' | 'warning' | 'error', text: string }> = {
+          0: { type: 'default', text: '未执行' },
+          1: { type: 'warning', text: '执行中' },
+          2: { type: 'success', text: '已执行' },
+        };
+        const status = statusMap[row.status] || { type: 'error', text: '未知' };
+        return h(
+          NTag,
+          {
+            type: status.type,
+            size: 'small',
+          },
+          { default: () => status.text }
+        );
       },
     },
     {

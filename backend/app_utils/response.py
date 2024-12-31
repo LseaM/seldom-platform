@@ -33,7 +33,7 @@ class Error:
     PROJECT_ID_NULL = (10020, "项目id不存在")
     PROJECT_OBJECT_NULL = (10021, "通过id查询项目不存在")
     PROJECT_DELETE_ERROR = (10023, "项目删除失败")
-    PROJECT_ADDRESS_ERROR = (10024, "项目地址无法访问")
+    PROJECT_ADDRESS_ERROR = (10024, "项目地址无法错误")
     PROJECT_CLONE_ERROR = (10025, "项目克隆失败")
     PROJECT_DIR_NULL = (10026, "项目测试目录不存在")
     PROJECT_PULL_ERROR = (10027, "项目拉取失败")
@@ -41,6 +41,7 @@ class Error:
     # 文件相关错误 (100xx)
     FILE_TYPE_ERROR = (10031, "文件类型错误")
     FILE_SIZE_ERROR = (10032, "超出文件大小")
+    FILE_NAME_ERROR = (10033, "文件名错误")
 
     # 团队相关错误 (100xx)
     TEAM_EMAIL_ERROR = (10041, "邮箱格式错误")
