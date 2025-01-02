@@ -222,7 +222,7 @@ def sync_project_case(request, project_id: int):
             try:
                 label = seldom["method"]["label"]
             except KeyError as msg:
-                log.error(msg)
+                log.error(f"Missing 'label' in method: {seldom['method']}. Error: {msg}")
                 label = ""
 
             case_hash_list.append(case_hash)
