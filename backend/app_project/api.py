@@ -211,7 +211,7 @@ def sync_project_case(request, project_id: int):
 
     main_extend = TestMainExtend(path=project_test_dir)
     seldom_case = main_extend.collect_cases(warning=True)
-
+    log.info(seldom_case)
     TestCaseTemp.objects.filter(project=project).delete()
 
     case_hash_list = []
