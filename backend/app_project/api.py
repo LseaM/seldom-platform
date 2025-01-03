@@ -217,7 +217,7 @@ def sync_project_case(request, project_id: int):
     case_hash_list = []
     # 从seldom项目中找到新增的用例
     for seldom in seldom_case:
-        label = {seldom["method"].get("label", "")}
+        label = seldom["method"].get("label", "")
         case_hash = get_hash(f"""{project_id}.{seldom["file"]}.{seldom["class"]["name"]}.{seldom["method"]["name"]}.{label}""")
         if case_hash not in case_hash_list:
             # try:
