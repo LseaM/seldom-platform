@@ -210,20 +210,21 @@ def sync_project_case(request, project_id: int):
     SeldomTestLoader.collectCaseList = []
 
     main_extend = TestMainExtend(path=project_test_dir)
-    seldom_case = main_extend.collect_cases(warning=True)
+    seldom_case = main_extend.collect_cases(warning=True, level="method")
     log.info(seldom_case)
     TestCaseTemp.objects.filter(project=project).delete()
 
     case_hash_list = []
     # 从seldom项目中找到新增的用例
     for seldom in seldom_case:
-        case_hash = get_hash(f"""{project_id}.{seldom["file"]}.{seldom["class"]["name"]}.{seldom["method"]["name"]}""")
+        label = {seldom["method"].get("label", "")}
+        case_hash = get_hash(f"""{project_id}.{seldom["file"]}.{seldom["class"]["name"]}.{seldom["method"]["name"]}.{label}""")
         if case_hash not in case_hash_list:
-            try:
-                label = seldom["method"]["label"]
-            except KeyError as msg:
-                log.error(f"Missing 'label' in method: {seldom['method']}. Error: {msg}")
-                label = ""
+            # try:
+            #     label = seldom["method"]["label"]
+            # except KeyError as msg:
+            #     log.error(f"Missing 'label' in method: {seldom['method']}. Error: {msg}")
+            #     label = ""
 
             case_hash_list.append(case_hash)
             TestCaseTemp.objects.create(
