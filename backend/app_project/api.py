@@ -217,15 +217,11 @@ def sync_project_case(request, project_id: int):
     case_hash_list = []
     # 从seldom项目中找到新增的用例
     for seldom in seldom_case:
+        # 获取label，默认为空，并且加入到hash值的计算中
         label = seldom["method"].get("label", "")
-        case_hash = get_hash(f"""{project_id}.{seldom["file"]}.{seldom["class"]["name"]}.{seldom["method"]["name"]}.{label}""")
+        case_hash = get_hash(
+            f"""{project_id}.{seldom["file"]}.{seldom["class"]["name"]}.{seldom["method"]["name"]}.{label}""")
         if case_hash not in case_hash_list:
-            # try:
-            #     label = seldom["method"]["label"]
-            # except KeyError as msg:
-            #     log.error(f"Missing 'label' in method: {seldom['method']}. Error: {msg}")
-            #     label = ""
-
             case_hash_list.append(case_hash)
             TestCaseTemp.objects.create(
                 project_id=project_id,
