@@ -145,9 +145,13 @@ const handlePasswordInput = () => {
   <div class="main">
     <header>
       <div class="features">
-        <div>
-          <h1>Seldom Platform. <n-tag type="success" size="small" round>v2.0</n-tag></h1>
-          <span style="color: #869ab8">基于Seldom框架编写你的自动化测试用例，剩下的事情交给平台.</span>
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <!-- <h1>MyCOS Testing Platform. <n-tag type="success" size="small" round>v1.0</n-tag></h1> -->
+          <h1 style="display: flex; align-items: center; font-size: 32px;">
+            <img src="../assets/mycos.png" alt="logo" style="height: 40px; margin-right: 8px;">
+            Testing Platform <n-tag type="success" size="small" round>v1.0</n-tag>
+          </h1>
+          <span style="color: #869ab8">编写自动化测试用例，剩下的事情交给平台.</span>
         </div>
         <div>
           <img src="../assets/login-bg.png" alt="" style="width: 60%;">
@@ -159,7 +163,7 @@ const handlePasswordInput = () => {
             <span class="feature-title">支持git</span>
           </div>
           <p class="text-muted mb-6 mb-md-0">
-            seldom-platform 可以接入任意git管理的自动化项目,
+            testing-platform 可以接入任意git管理的自动化项目,
             克隆和拉取项目代码。
           </p>
         </div>
@@ -169,7 +173,7 @@ const handlePasswordInput = () => {
             <span class="feature-title">解析用例</span>
           </div>
           <p class="text-muted mb-0">
-            seldom-platform 可以自动解析seldom自动化项目的“用例”,
+            testing-platform 可以自动解析自动化项目的“用例”,
             并且在平台上展示。
           </p>
         </div>
@@ -182,8 +186,8 @@ const handlePasswordInput = () => {
             借助于平台的能力，可以方便的管理用例的执行、创建定时任务、展示统计结果。
           </p>
         </div>
-        <n-divider>相关项目</n-divider>
-        <div>
+        <!-- <n-divider>相关项目</n-divider> -->
+        <!-- <div>
           <span>@2024 Powered by SeldomQA Team</span>
            <a href="https://github.com/SeldomQA/seldom-platform" target="_blank">
             <n-button type="primary" quaternary>seldom</n-button>
@@ -194,7 +198,7 @@ const handlePasswordInput = () => {
           <a href="https://seldomqa.github.io/" target="_blank">
             <n-button type="info" quaternary>在线文档</n-button>
           </a>
-        </div> 
+        </div>  -->
       </div>
     </header>
     <div class="content">

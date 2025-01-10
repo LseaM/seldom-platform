@@ -52,7 +52,7 @@ onMounted(() => {
           </n-layout>
         </n-layout>
           <n-layout-footer bordered position="absolute" style="text-align: center">
-            © 2024 Powered by SeldomQA Team
+            © 2024 Powered by Testing Team
           </n-layout-footer>
       </n-layout>
     </n-layout>

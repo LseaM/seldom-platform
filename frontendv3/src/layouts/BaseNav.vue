@@ -75,11 +75,11 @@ const handleSelect = (key: string | number) => {
       });
       break;
     case 'github':
-      window.open('https://github.com/SeldomQA/seldom-platform', '_blank');
+      window.open('https://github.com/LseaM/seldom-platform.git', '_blank');
       break;
-    case 'help_documentation':
-      window.open('https://www.yuque.com/chongshi/raflru/ghot2m', '_blank');
-      break;
+    // case 'help_documentation':
+    //   window.open('https://www.yuque.com/chongshi/raflru/ghot2m', '_blank');
+    //   break;
     default:
       break;
   }
