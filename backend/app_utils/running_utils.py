@@ -20,6 +20,7 @@ def configure_browser(env: Env):
         # 设置浏览器headless模式
         if browser_type in ["gc", "chrome"]:
             chrome_options = ChromeOptions()
+            chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--headless=new")
             browser_conf["browser"] = "chrome"
             browser_conf["options"] = chrome_options
