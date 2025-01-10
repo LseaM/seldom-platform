@@ -39,11 +39,6 @@ const personOptions = [
     icon: () => h(NIcon, null, { default: () => h(GitHubIcon) }),
   },
   {
-    label: '使用手册',
-    key: 'help_documentation',
-    icon: () => h(NIcon, null, { default: () => h(DocIcon) }),
-  },
-  {
     label: '退出登录',
     key: 'logout',
     icon: () => h(NIcon, null, { default: () => h(LogoutIcon) }),
@@ -77,9 +72,6 @@ const handleSelect = (key: string | number) => {
     case 'github':
       window.open('https://github.com/LseaM/seldom-platform.git', '_blank');
       break;
-    // case 'help_documentation':
-    //   window.open('https://www.yuque.com/chongshi/raflru/ghot2m', '_blank');
-    //   break;
     default:
       break;
   }
